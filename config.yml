@@ -1,8 +1,8 @@
-title: scipiper tips and tricks
-description: Common issues and approaches for debugging scipiper pipelines
+title: Shared cache pipelines
+description: How to share intermediate data products with a team within a reproducible pipeline framework
 template:
-  name: ds-pipelines-2-template
-  repo: ds-pipelines-2
+  name: ds-pipelines-4-template
+  repo: ds-pipelines-4
 before:
   - type: createIssue
     title: Recognize the unique demands of big collaborative pipelines
