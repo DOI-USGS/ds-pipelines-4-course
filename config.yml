@@ -1,4 +1,4 @@
-title: Shared cache pipelines
+title: Shared-cache pipelines
 description: How to share intermediate data products with a team within a reproducible pipeline framework
 template:
   repo: ds-pipelines-4-template
