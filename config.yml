@@ -1,5 +1,5 @@
-title: Big Collaborative Pipelines
-description: Big Collaborative Pipelines: using a shared cache, creating task tables, and implementing the split-apply and split-apply-combine paradigms
+title: scipiper tips and tricks
+description: Common issues and approaches for debugging scipiper pipelines
 template:
   name: ds-pipelines-2-template
   repo: ds-pipelines-2
