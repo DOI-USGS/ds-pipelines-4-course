@@ -1,37 +1,21 @@
-title: # a name for your Learning Lab course
-description: # a longer description for your Learning Lab course, displayed on the course's landing page
-
-# Repository setup
-# The following section template information for the repository
-# This will be used when the repository is crated for each individual learner
-
+title: Big Collaborative Pipelines
+description: Big Collaborative Pipelines: using a shared cache, creating task tables, and implementing the split-apply and split-apply-combine paradigms
 template:
-  name: # the name of the repository when it is created for the learner
-  repo: # the name of the template repository from which to clone for the learner
-
-# `before` block
-# Actions to take place after the learner registers, but before they start interacting with their repo
-
+  name: ds-pipelines-2-template
+  repo: ds-pipelines-2
 before:
-- type: # the type of action, full list at https://lab.github.com/docs/actions/
-  # some actions require additional options, those should appear below `type:`
-  # you can execute multiple actions in the `before` block
-
-# Steps for the course
-# A list of steps that take the learner through the course
-# Create one step for each action that a learner will complete
-
+  - type: createIssue
+    title: Recognize the unique demands of big collaborative pipelines
+    body: 00-overview.md
+    store:
+      overview_issue_url: '{{ result.data.html_url }}'
 steps:
-- title: # the title of the step, shown to the learner in the course progress page
-  description: # the event that will trigger the actions to be executed, full list at https://developer.github.com/v3/activity/events/types/
-  event: # a list of the actions that will occur when the step is triggered by an event
-  actions:
-  - type: # the type of action, full list at https://lab.github.com/docs/actions
-  # some actions require additional options, those should appear below `type:`
-  # you can execute multiple actions in the `before` block
-  #
-  # - type:
-  #   option:
-  #
-  # - type:
-  #   option:
+  - title: Get the big picture
+    description: Recognize the unique demands of big collaborative pipelines
+    link: '{{ store.overview_issue_url }}'
+    event: issues.assigned
+    actions:
+      - type: respond
+        with: 01-access-caches.md
+        store:
+          install_activity_url: '{{ result.data.html_url }}'
