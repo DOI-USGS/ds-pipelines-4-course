@@ -1,0 +1,63 @@
+Intermediate B (Pipelines IV): Shared-cache pipelines
+•	General concept of a remote cache for team data analysis
+  o	Motivation
+    	Save time (e.g., long-running builds, including large task tables)
+    	OS-specific tasks
+    	Maintain local development option
+  o	Implementation concept: indicator files as promises of completion
+    	Theory of two minds – scipiper knows one thing (that .ind files connect to one another in the main pipeline)(or two things – also getters.yml knowledge?), we know another (that .ind files represent data files)
+    	Separate getter.yml file (https://github.com/USGS-R/scipiper/issues/70)
+    	*Figure*
+    	*Demo on 2 local repo copies (ds-pipelines-4a, ds-pipelines-4b)*
+•	Cache options
+  o	The options: S3, Drive, Yeti/Caldera?, Sciencebase?, others could be implemented
+  o	Choosing a cache: consider GUI, outside collaborations, …
+  o	Issues with Drive and gov accounts (e.g., xxx.usgs@gmail.com , FOIA)
+  o	S3 and how to access it
+    	Some S3 credentials are available on dssecrets. David usually updates these. He talks to ___ to get the updates. They’re updated every ___ months. They’re “rotated”, which means ___.
+    	Lindsay has her own set of S3 credentials. Why?
+    	Use the update_aws_profile() function to insert the AWS keys in a secret into the AWS credentials file. The default arguments should be sufficient for most purposes. You may need to restart RStudio before aws.signature::use_credentials() will recognize the updated credentials. (from https://github.com/USGS-CIDA/dssecrets#aws-keys )
+    	the AWS region needs to be specified somewhere.  You can see the next to last line there the request is going to the us-east-1 region, which is the default.  All our AWS stuff is in the us-west-2 region. Add this file (where?):
+      •	[default]
+      •	region = us-west-2
+    	we use dssecrets to get the secret, but then manually replace the secret value in a plain text file on our user? (seems a little dangerous)
+      •	Could we use dssecrets to set an environment variable without going through a config file?
+    	Need to be on VPN
+    	aws.signature::use_credentials reads the credentials file and puts the contents into environment variables. But note that s3_get runs this internally, so if you try to run use_credentials followed by s3_get, you might be overriding yourself.
+    	~/.aws/credentials
+    	Maybe don’t need a config file at all?
+    	Current users of S3: David, Lindsay, Sam, and attempts by Jordan
+    	Clarify that there’s no magical connection from dssecrets to aws except via the text file (but could change that)
+  o	Drive and how to access it
+  o	Interaction of caching on S3/Drive/etc. and using git for some files – discuss .gitignore recommendations.     Note that simply passing a data file via git won’t make someone else’s scipiper think that the data file is up to date – you need a build/status file for that. Could have a build/status file for a non-ind file, I guess….
+•	Implementation in a project
+  o	Design considerations
+    	Libraries that only some people / OSes can build – bury these in a task table?
+    	Task tables with shared cache – if the task-steps don’t need to be shared, don’t use .ind files for them
+    	.yml for indicator files that only indicate locally
+    	When to use objects vs files - revisited for shared cache
+      •	Objects will be built locally for all who have the project, unless the object is not connected to their targets
+      •	How to share an object with the tasks of a task table (see JR’s driver_munge table filtering – how best to do this?)
+  o	.ind and build/status files and what to include in a PR
+•	Big [shared] pipelines – some of this isn’t strictly only for shared caches, but I don’t think we have enough for a pipelines-5 course
+  o	Phased remake files (one per phase)
+    	When to use “include” to connect w/ a previous stage vs put it all in the master remake.yml: Demo this as a daisy chain rather than include in parent, but we’re not sure
+  o	Challenge: accessing an “in” remote target
+    	gd_confirm_posted, etc.
+    	Manual trigger (e.g., dummy argument) (already in P2)
+  o	Designing breaks between big pipelines
+    	Sciencebase
+    	Copy GD .ind files from one pipeline into the next
+•	Gotchas and Troubleshooting
+  o	Monitor for unnecessary rebuilds
+    	Review from pipelines-2?: which_dirty and why_dirty
+    	Review from pipelines-2?: scbless() and when to apply it: if and only if you know that (1) the bless is merited because you know exactly what changed and can guarantee that it has no effect on the target you want to bless, or (2) you’re absolutely confident you’re not going to share any results (to the shared cache or the git repo) with other people, and you just need the `scbless` call to help you be productive in the next hour or two while waiting to figure out whether a rebuild of the blessed target is needed. In general, if it’s not too expensive to rebuild, prefer rebuilding to blessing.
+  o	Files that look different on different computers (can’t even share hashes of these things)
+    	Sf objects
+    	Newlines (OS-specific)
+      •	Applies to text files you write out and hash – use tidyverse instead of base R
+      •	Applies to source code files that are treated as dependencies, e.g. for task table targets in the main pipeline – for this, probably helps to set up your project to always use the same line endings (I’d go with POSIX = LF because it’s the Linux/Mac way)
+    	Simulate a repo-specific object with a function that checks the repo name?
+•	Future directions
+  o	When not to use a shared cache – single-coder repo, acceptable duplication, unavoidable to have most of the big files everywhere (e.g., modeling on cluster)
+  o	Someday we might use a shared coding environment instead, but then we’ll need to figure out personal development space
